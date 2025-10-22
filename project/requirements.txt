@@ -1,0 +1,9 @@
+Flask
+gunicorn
+os 
+json
+werkzeug
+datetime
+zipfile
+Flask-SQLAlchemy
+flask-login
