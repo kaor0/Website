@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Add Teacher{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        padding: 30px;
+        margin-top: 20px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #28a745;
+        margin-bottom: 8px;
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        padding: 10px;
+        border: 2px solid #e9ecef;
+    }
+    
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+    
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+    
+    .profile-pic-preview {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #dee2e6;
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="container">
+    <div class="form-container">
+        <h1 class="text-center mb-4">👩‍🏫 Add Teacher Information</h1>
+        
+        <form method="POST" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="age" class="form-label">Age *</label>
+                        <input type="number" class="form-control" id="age" name="age" min="25" max="65" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="contact" class="form-label">Contact Number *</label>
+                        <input type="tel" class="form-control" id="contact" name="contact" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject *</label>
+                        <select class="form-control" id="subject" name="subject" required>
+                            <option value="">Select Subject</option>
+                            <option value="Dzongkha 1">Dzongkha 1</option>
+                            <option value="Dzongkha 2">Dzongkha 2</option>
+                            <option value="English 1">English 1</option>
+                            <option value="English 2">English 2</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Biology">Biology</option>
+                            <option value="ICT">ICT</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" 
+                       placeholder="optional">
+            </div>
+            
+            <div class="mb-4">
+                <label for="profile_pic" class="form-label">Profile Picture</label>
+                <input type="file" class="form-control" id="profile_pic" name="profile_pic" 
+                       accept="image/*">
+                <div class="form-text">Optional: Upload a profile picture (JPG, PNG)</div>
+            </div>
+            
+            <div class="text-center">
+                <button type="submit" class="btn btn-success px-4">Add Teacher</button>
+                <!-- UPDATED THIS LINE -->
+                <a href="{{ url_for('auth.teachers_page') }}" class="btn btn-secondary px-4 ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Preview profile picture before upload
+document.getElementById('profile_pic').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            let preview = document.getElementById('profile-pic-preview');
+            if (!preview) {
+                preview = document.createElement('img');
+                preview.id = 'profile-pic-preview';
+                preview.className = 'profile-pic-preview d-block mx-auto';
+                document.querySelector('form').insertBefore(preview, document.querySelector('.text-center'));
+            }
+            preview.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

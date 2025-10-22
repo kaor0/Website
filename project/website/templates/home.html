@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background-color: #f8f9fa;
+    font-family: "Poppins", sans-serif;
+  }
+
+  h1 {
+    color: #004aad;
+    font-weight: 600;
+    margin-bottom: 30px;
+  }
+
+  .note-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    padding: 25px;
+    margin-top: 20px;
+  }
+
+  .list-group-item {
+    border: none;
+    border-bottom: 1px solid #eee;
+    padding: 15px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .list-group-item:last-child {
+    border-bottom: none;
+  }
+
+  .note-content {
+    flex-grow: 1;
+  }
+
+  .note-actions {
+    display: flex;
+    gap: 10px;
+    margin-left: 15px;
+  }
+
+  .close {
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .share-btn {
+    background: none;
+    border: 1px solid #28a745;
+    color: #28a745;
+    padding: 4px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s;
+  }
+
+  .share-btn:hover {
+    background: #28a745;
+    color: white;
+  }
+
+  .share-btn.shared {
+    background: #28a745;
+    color: white;
+  }
+
+  .unshare-btn {
+    background: none;
+    border: 1px solid #ffc107;
+    color: #856404;
+    padding: 4px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s;
+  }
+
+  .unshare-btn:hover {
+    background: #ffc107;
+    color: #000;
+  }
+
+  textarea {
+    border-radius: 10px;
+    resize: none;
+    min-height: 80px;
+  }
+
+  .form-control, .btn {
+    border-radius: 10px;
+  }
+
+  .btn-primary {
+    background-color: #004aad;
+    border: none;
+    transition: 0.3s;
+  }
+
+  .btn-primary:hover {
+    background-color: #00347a;
+  }
+
+  .welcome-text {
+    margin-top: 15px;
+    color: #198754;
+    font-weight: 500;
+  }
+
+  .note-link {
+    color: #0d6efd;
+    text-decoration: none;
+  }
+
+  .note-link:hover {
+    text-decoration: underline;
+  }
+
+  .login-message {
+    margin-top: 60px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    padding: 30px;
+    display: inline-block;
+  }
+
+  .subject-badge {
+    font-size: 0.8em;
+    margin-bottom: 8px;
+    display: inline-block;
+  }
+</style>
+
+{% if current_user.is_authenticated %}
+  <div class="container">
+    <div class="note-card">
+      <h1 class="text-center">Your Notes</h1>
+
+      {% if current_user.notes %}
+        <ul class="list-group list-group-flush" id="notes">
+          {% for note in current_user.notes %}
+            <li class="list-group-item" data-note-id="{{ note.id }}">
+              <div class="note-content">
+                <span class="badge bg-primary subject-badge">{{ note.subject }}</span>
+                <p class="mb-1">{{ note.data }}</p>
+                {% if note.file_name %}
+                  <a href="{{ url_for('static', filename='uploads/' + note.file_name) }}" 
+                     target="_blank" class="note-link">📄 View File</a>
+                {% endif %}
+              </div>
+              <div class="note-actions">
+                {% if note.public %}
+                  <button type="button" class="unshare-btn" onclick="toggleShare({{ note.id }}, false)">
+                    🔒 Unshare
+                  </button>
+                {% else %}
+                  <button type="button" class="share-btn" onclick="toggleShare({{ note.id }}, true)">
+                    🔓 Share
+                  </button>
+                {% endif %}
+                <button type="button" class="close" onclick="deleteNote(this)">
+                  &times;
+                </button>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-center text-muted mt-3">You haven't added any notes yet.</p>
+      {% endif %}
+
+      <!-- Add Note Form -->
+      <form method="POST" class="mt-4" enctype="multipart/form-data">
+        <textarea name="note" id="note" class="form-control mb-3" placeholder="Write a new note..." required></textarea>
+        <input type="file" name="file" class="form-control mb-3">
+        
+        <!-- Subject Selection -->
+        <div class="mb-3">
+          <label for="subject" class="form-label">Subject</label>
+          <select name="subject" id="subject" class="form-select" required>
+            <option value="General">General</option>
+            <option value="Dzongkha 1">Dzongkha 1</option>
+            <option value="Dzongkha 2">Dzongkha 2</option>
+            <option value="English 1">English 1</option>
+            <option value="English 2">English 2</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Biology">Biology</option>
+            <option value="ICT">ICT</option>
+          </select>
+        </div>
+        
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary px-4">Add Note</button>
+        </div>
+      </form>
+
+      <p class="text-center welcome-text">Welcome, {{ current_user.email }}!</p>
+    </div>
+  </div>
+
+{% else %}
+  <div class="text-center">
+    <div class="login-message">
+      <p>Please <a href="{{ url_for('auth.login') }}" class="note-link">log in</a> to view or add notes.</p>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

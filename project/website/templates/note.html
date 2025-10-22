@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Shared Notes{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="text-center mb-4 fw-bold">📚 Shared Notes</h2>
+
+  <!-- Subject Filter -->
+  <div class="row mb-4">
+    <div class="col-md-6 mx-auto">
+      <select id="subjectFilter" class="form-select" onchange="filterNotes()">
+        <option value="all">All Subjects</option>
+        <option value="Dzongkha 1">Dzongkha 1</option>
+        <option value="Dzongkha 2">Dzongkha 2</option>
+        <option value="English 1">English 1</option>
+        <option value="English 2">English 2</option>
+        <option value="Mathematics">Mathematics</option>
+        <option value="Physics">Physics</option>
+        <option value="Chemistry">Chemistry</option>
+        <option value="Biology">Biology</option>
+        <option value="ICT">ICT</option>
+        <option value="General">General</option>
+      </select>
+    </div>
+  </div>
+
+  {% if notes %}
+    <div class="row" id="notesContainer">
+      {% for note in notes %}
+      <div class="col-md-6 col-lg-4 mb-4 note-card" data-subject="{{ note.subject }}">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+          <div class="card-body">
+            <span class="badge bg-primary mb-2">{{ note.subject }}</span>
+            <h5 class="card-title text-primary fw-semibold">
+              {{ note.user.first_name }}
+            </h5>
+            <p class="card-text mt-2">{{ note.data }}</p>
+
+            {% if note.file_name %}
+              <a href="{{ url_for('static', filename='uploads/' + note.file_name) }}"
+                 target="_blank"
+                 class="btn btn-outline-secondary btn-sm mt-2">
+                📎 View Attached File
+              </a>
+            {% endif %}
+
+            <p class="text-muted small mt-3 mb-0">
+              Shared on {{ note.date.strftime('%b %d, %Y, %I:%M %p') }}
+            </p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center text-muted">
+      <p>No shared notes yet. Be the first to share something valuable! ✨</p>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+function filterNotes() {
+    const subject = document.getElementById('subjectFilter').value;
+    const noteCards = document.querySelectorAll('.note-card');
+    
+    noteCards.forEach(card => {
+        if (subject === 'all' || card.getAttribute('data-subject') === subject) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+</script>
+
+<script>
+// Auto-dismiss flash messages after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>
+{% endblock %}

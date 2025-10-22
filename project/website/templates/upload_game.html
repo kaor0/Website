@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Upload Game{% endblock %}
+
+{% block content %}
+<style>
+    .upload-container {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        padding: 30px;
+        margin-top: 20px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #28a745;
+        margin-bottom: 8px;
+    }
+    
+    .upload-instructions {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+    }
+    
+    .btn-upload {
+        background-color: #28a745;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container">
+    <div class="upload-container">
+        <h1 class="text-center mb-4">📤 Upload Your Game</h1>
+        
+        <div class="upload-instructions">
+            <h5>📝 Upload Guidelines:</h5>
+            <ul class="mb-0">
+                <li><strong>Web Games:</strong> Upload HTML/JS files that run in browser</li>
+                <li><strong>Python Games:</strong> Upload .py files that users can download and run</li>
+                <li>Make sure your game is school-appropriate</li>
+                <li>Include clear instructions for how to play/run your game</li>
+                <li>Test your game before uploading!</li>
+            </ul>
+        </div>
+        
+        <form method="POST" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Game Title *</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               placeholder="e.g., Space Invaders, Math Quiz" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="game_type" class="form-label">Game Type *</label>
+                        <select class="form-select" id="game_type" name="game_type" required>
+                            <option value="">Select Type</option>
+                            <option value="web">Web Game (HTML/JS)</option>
+                            <option value="desktop">Python Game (.py file)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="description" class="form-label">Game Description *</label>
+                <textarea class="form-control" id="description" name="description" rows="3" 
+                         placeholder="Describe your game, what it does, and how to play..." required></textarea>
+            </div>
+            
+            <div class="mb-3">
+                <label for="instructions" class="form-label">How to Play/Run *</label>
+                <textarea class="form-control" id="instructions" name="instructions" rows="2" 
+                         placeholder="For web games: 'Click to play'. For Python games: 'Run python game.py'" required></textarea>
+            </div>
+            
+            <div class="mb-3">
+                <label for="requirements" class="form-label">Requirements (for Python games)</label>
+                <input type="text" class="form-control" id="requirements" name="requirements" 
+                       placeholder="e.g., pygame, tkinter, pillow (optional)">
+                <div class="form-text">List Python libraries needed to run your game</div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="game_file" class="form-label">Game File *</label>
+                <input type="file" class="form-control" id="game_file" name="game_file" 
+                       accept=".py,.html,.js,.zip" required>
+                <div class="form-text">
+                    Accepted: .py (Python), .html/.js (Web), .zip (multiple files)
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button type="submit" class="btn btn-upload px-4">🚀 Upload Game</button>
+                <a href="{{ url_for('auth.games_hub') }}" class="btn btn-secondary px-4 ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Show/hide requirements field based on game type
+document.getElementById('game_type').addEventListener('change', function() {
+    const requirementsField = document.getElementById('requirements');
+    const requirementsHelp = requirementsField.nextElementSibling;
+    
+    if (this.value === 'desktop') {
+        requirementsField.required = false;
+        requirementsHelp.style.display = 'block';
+    } else {
+        requirementsField.required = false;
+        requirementsHelp.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}
